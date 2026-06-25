@@ -1,0 +1,5 @@
+# 평문 가격표 원본 (절대 공개 저장소에 올리지 않음)
+catalog-wip.json
+# 암호화 중간 산출물 (index.html 에 이미 포함됨)
+enc.json
+.DS_Store
