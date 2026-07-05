@@ -136,8 +136,18 @@ async function decryptCatalog(pass){
   const pt=await crypto.subtle.decrypt({name:"AES-GCM", iv:b64d(ENC.iv)}, key, b64d(ENC.ct));
   return JSON.parse(new TextDecoder().decode(pt));
 }
+// 사이즈가 "M / L" 처럼 여러 개면 사이즈별 카드로 분리 (각각 따로 주문)
+function expandSizes(cat){
+  const out=[];
+  cat.forEach(p=>{
+    const parts=String(p.size||"").split("/").map(s=>s.trim()).filter(Boolean);
+    if(parts.length<=1){ out.push(p); return; }
+    parts.forEach(sz=> out.push(Object.assign({}, p, {size:sz})));
+  });
+  return out;
+}
 async function tryUnlock(pass){
-  try{ const cat=await decryptCatalog(pass); CATALOG=cat; return true; }
+  try{ const cat=await decryptCatalog(pass); CATALOG=expandSizes(cat); return true; }
   catch(e){ return false; }
 }
 function startApp(){
